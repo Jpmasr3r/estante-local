@@ -69,6 +69,48 @@ export class LibraryManager {
 		}
 	}
 
+	public async authorizeBookAccess(bookId: string): Promise<File | null> {
+		const authorizedFile = await this.getBookSource(bookId, true);
+
+		if (authorizedFile) {
+			return authorizedFile;
+		}
+
+		const library = this.getLibrary();
+		const currentFolder = library?.folders.find((folder) =>
+			folder.books.some((book) => book.id === bookId),
+		);
+		const currentBook = currentFolder?.books.find((book) => book.id === bookId);
+
+		if (!currentFolder || !currentBook) {
+			return null;
+		}
+
+		const selection = await this.directoryPicker.select();
+
+		if (!selection) {
+			return null;
+		}
+
+		const selectedFolder = await this.readSelection(
+			selection,
+			currentFolder.id,
+		);
+
+		if (selectedFolder.name !== currentFolder.name) {
+			return null;
+		}
+
+		this.session.replaceFolder(selectedFolder);
+		const selectedBook = selectedFolder.books.find(
+			(book) =>
+				book.id === currentBook.id ||
+				book.relativePath === currentBook.relativePath,
+		);
+
+		return selectedBook?.source ?? null;
+	}
+
 	public async addFolder(): Promise<LocalLibrary | null> {
 		const selectedFolder = await this.directoryPicker.select();
 

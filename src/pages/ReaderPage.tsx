@@ -12,6 +12,7 @@ export function ReaderPage({ book }: ReaderPageProps) {
 	const [file, setFile] = useState<File | null>(book.source);
 	const [sourceUrl, setSourceUrl] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState(book.source === null);
+	const [accessError, setAccessError] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (file) {
@@ -46,9 +47,22 @@ export function ReaderPage({ book }: ReaderPageProps) {
 
 	const handleRequestAccess = async () => {
 		setIsLoading(true);
-		const storedFile = await libraryManager.getBookSource(book.id, true);
-		setFile(storedFile);
-		setIsLoading(false);
+		setAccessError(null);
+
+		try {
+			const storedFile = await libraryManager.authorizeBookAccess(book.id);
+			setFile(storedFile);
+
+			if (!storedFile) {
+				setAccessError(
+					"Selecione novamente a mesma pasta que contém este PDF.",
+				);
+			}
+		} catch {
+			setAccessError("Não foi possível acessar o PDF selecionado.");
+		} finally {
+			setIsLoading(false);
+		}
 	};
 
 	return (
@@ -95,16 +109,21 @@ export function ReaderPage({ book }: ReaderPageProps) {
 						{!isLoading && (
 							<>
 								<p className="mt-3 text-muted leading-relaxed">
-									Autorize novamente a pasta para abrir este arquivo. Em
-									navegadores sem acesso persistente, releia a pasta nas
-									configurações.
+									Autorize novamente a pasta para abrir este arquivo. Se o
+									navegador não preservar permissões, selecione a mesma pasta
+									novamente.
 								</p>
+								{accessError && (
+									<p className="mt-3 text-danger text-sm" role="alert">
+										{accessError}
+									</p>
+								)}
 								<button
 									className="app-primary mt-6 rounded-xl bg-accent px-5 py-3 font-semibold text-accent-contrast hover:bg-accent-strong"
 									onClick={handleRequestAccess}
 									type="button"
 								>
-									Autorizar acesso
+									Autorizar acesso à pasta
 								</button>
 							</>
 						)}
