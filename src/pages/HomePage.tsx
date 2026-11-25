@@ -1,4 +1,29 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { libraryManager } from "../config/library";
+
 export function HomePage() {
+	const navigate = useNavigate();
+	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+	const handleFolderSelection = async () => {
+		try {
+			setErrorMessage(null);
+			const library = await libraryManager.addFolder();
+
+			if (library && library.folders.length > 0) {
+				navigate("/biblioteca");
+			}
+		} catch (error) {
+			setErrorMessage(
+				error instanceof Error
+					? error.message
+					: "Não foi possível acessar a pasta selecionada.",
+			);
+		}
+	};
+
 	return (
 		<div className="relative isolate overflow-hidden bg-[#fdfbf7]">
 			<div
@@ -97,7 +122,8 @@ export function HomePage() {
 						</p>
 
 						<button
-							className="mt-7 inline-flex items-center justify-center gap-2 rounded-xl bg-amber-900 px-6 py-3.5 font-semibold text-amber-50 shadow-md transition-colors hover:bg-amber-950 focus-visible:outline-2 focus-visible:outline-amber-800 focus-visible:outline-offset-2"
+							className="mt-7 inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-amber-900 px-6 py-3.5 font-semibold text-amber-50 shadow-md transition-colors hover:bg-amber-950 focus-visible:outline-2 focus-visible:outline-amber-800 focus-visible:outline-offset-2"
+							onClick={handleFolderSelection}
 							type="button"
 						>
 							<svg
@@ -116,6 +142,12 @@ export function HomePage() {
 							</svg>
 							Selecionar pasta
 						</button>
+
+						{errorMessage && (
+							<p className="mt-4 text-red-700 text-sm" role="alert">
+								{errorMessage}
+							</p>
+						)}
 
 						<p className="mt-5 font-medium text-stone-500 text-xs uppercase tracking-wider">
 							Formatos compatíveis: PDF e EPUB

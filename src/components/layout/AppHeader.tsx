@@ -1,12 +1,13 @@
+import { Link } from "react-router-dom";
 import { env } from "../../config/env";
 
 export function AppHeader() {
 	return (
 		<header className="border-amber-950/10 border-b bg-[#fdfbf7]/90 px-5 backdrop-blur sm:px-8">
 			<div className="mx-auto flex min-h-18 w-full max-w-6xl items-center justify-between gap-6">
-				<a
+				<Link
 					className="flex items-center gap-3 text-amber-950 no-underline"
-					href="/"
+					to="/"
 					aria-label="Página inicial do Estante Local"
 				>
 					<span className="grid size-10 place-items-center rounded-xl bg-amber-900 text-amber-50 shadow-sm">
@@ -28,7 +29,7 @@ export function AppHeader() {
 					<span className="font-bold text-lg tracking-tight sm:text-xl">
 						{env.VITE_APP_NAME}
 					</span>
-				</a>
+				</Link>
 
 				<span className="hidden items-center gap-2 text-sm text-stone-600 sm:flex">
 					<svg

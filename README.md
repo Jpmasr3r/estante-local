@@ -42,4 +42,6 @@ src/
 ```
 
 O processamento dos arquivos será realizado localmente. Nenhum back-end faz parte
-do escopo do projeto.
+do escopo do projeto. Apenas os metadados da biblioteca são persistidos no
+`localStorage` em formato JSON. As permissões das pastas são mantidas no IndexedDB
+para permitir a releitura. O conteúdo dos livros nunca é armazenado ou enviado.
