@@ -22,6 +22,47 @@ export class LibraryManager {
 		return this.session.getCurrentLibrary();
 	}
 
+	public async getBookSource(
+		bookId: string,
+		requestAccess = false,
+	): Promise<File | null> {
+		const library = this.getLibrary();
+		const folder = library?.folders.find((currentFolder) =>
+			currentFolder.books.some((book) => book.id === bookId),
+		);
+		const book = folder?.books.find((currentBook) => currentBook.id === bookId);
+
+		if (!folder || !book) {
+			return null;
+		}
+
+		if (book.source) {
+			return book.source;
+		}
+
+		try {
+			const handle = await this.handleRepository.find(folder.id);
+
+			if (!handle) {
+				return null;
+			}
+
+			let permission = await handle.queryPermission({ mode: "read" });
+
+			if (permission !== "granted" && requestAccess) {
+				permission = await handle.requestPermission({ mode: "read" });
+			}
+
+			if (permission !== "granted") {
+				return null;
+			}
+
+			return await this.readBookFile(handle, folder, book.relativePath);
+		} catch {
+			return null;
+		}
+	}
+
 	public async addFolder(): Promise<LocalLibrary | null> {
 		const selectedFolder = await this.directoryPicker.select();
 
@@ -129,5 +170,34 @@ export class LibraryManager {
 		} catch {
 			// A pasta continua disponível na sessão atual quando o IndexedDB falha.
 		}
+	}
+
+	private async readBookFile(
+		handle: FileSystemDirectoryHandle,
+		folder: LibraryFolder,
+		relativePath: string,
+	): Promise<File | null> {
+		const pathParts = relativePath.split("/").filter(Boolean);
+
+		if (pathParts[0] === folder.name) {
+			pathParts.shift();
+		}
+
+		const fileName = pathParts.pop();
+
+		if (!fileName) {
+			return null;
+		}
+
+		let currentDirectory = handle;
+
+		for (const directoryName of pathParts) {
+			currentDirectory =
+				await currentDirectory.getDirectoryHandle(directoryName);
+		}
+
+		const fileHandle = await currentDirectory.getFileHandle(fileName);
+
+		return fileHandle.getFile();
 	}
 }

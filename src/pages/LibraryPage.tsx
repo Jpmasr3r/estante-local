@@ -74,6 +74,10 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 		}
 	};
 
+	const handleOpenBook = (bookId: string) => {
+		navigate(`/leitor/${encodeURIComponent(bookId)}`);
+	};
+
 	return (
 		<section className="min-h-[calc(100vh-4.5rem)] bg-[#f7f4ed] px-5 py-10 sm:px-8">
 			<div className="mx-auto w-full max-w-6xl">
@@ -229,13 +233,21 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 				) : (
 					<div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4">
 						{library.books.map((book) => (
-							<article className="group" key={book.id}>
-								<div
-									className={`relative aspect-[2/3] overflow-hidden rounded-2xl bg-gradient-to-br p-5 shadow-md transition-transform duration-300 group-hover:-translate-y-1 ${
+							<article key={book.id}>
+								<button
+									aria-label={
 										book.format === "PDF"
-											? "from-amber-900 to-amber-700"
-											: "from-emerald-900 to-emerald-700"
+											? `Ler ${book.title}`
+											: `${book.title}: leitura EPUB ainda indisponível`
+									}
+									className={`relative block aspect-[2/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br p-5 text-left shadow-md transition-transform duration-300 ${
+										book.format === "PDF"
+											? "cursor-pointer from-amber-900 to-amber-700 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-amber-900 focus-visible:outline-offset-2"
+											: "cursor-default from-emerald-900 to-emerald-700"
 									}`}
+									disabled={book.format !== "PDF"}
+									onClick={() => handleOpenBook(book.id)}
+									type="button"
 								>
 									<div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_35%,rgba(255,255,255,0.12)_50%,transparent_65%)]" />
 									<div className="relative flex h-full flex-col justify-between border border-white/20 p-4 text-white">
@@ -260,7 +272,7 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 											{book.format}
 										</p>
 									</div>
-								</div>
+								</button>
 								<h2 className="mt-4 truncate font-bold text-stone-900">
 									{book.title}
 								</h2>
