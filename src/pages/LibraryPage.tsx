@@ -139,17 +139,17 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 	};
 
 	return (
-		<section className="min-h-[calc(100vh-4.5rem)] bg-[#f7f4ed] px-5 py-10 sm:px-8">
+		<section className="min-h-[calc(100vh-4.5rem)] bg-background px-5 py-10 sm:px-8">
 			<div className="mx-auto w-full max-w-6xl">
 				<header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
 					<div>
-						<p className="font-semibold text-amber-900 text-sm uppercase tracking-widest">
+						<p className="font-semibold text-accent-strong text-sm uppercase tracking-widest">
 							Minha coleção
 						</p>
-						<h1 className="mt-2 font-bold text-3xl text-stone-900 tracking-tight sm:text-4xl">
+						<h1 className="mt-2 font-bold text-3xl text-text tracking-tight sm:text-4xl">
 							Biblioteca
 						</h1>
-						<p className="mt-2 text-stone-600">
+						<p className="mt-2 text-muted">
 							{library.totalBooks}{" "}
 							{library.totalBooks === 1
 								? "livro encontrado"
@@ -161,7 +161,7 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 
 					<div className="flex flex-wrap gap-3">
 						<button
-							className="inline-flex items-center justify-center gap-2 rounded-xl border border-stone-300 bg-white px-4 py-2.5 font-semibold text-sm text-stone-700 shadow-sm disabled:cursor-wait disabled:opacity-60"
+							className="app-button inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 font-semibold text-sm text-text shadow-sm disabled:cursor-wait disabled:opacity-60"
 							disabled={isRefreshing}
 							onClick={handleRefreshFolders}
 							type="button"
@@ -184,7 +184,7 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 						</button>
 
 						<button
-							className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-900 px-4 py-2.5 font-semibold text-amber-50 text-sm shadow-sm hover:bg-amber-950"
+							className="app-primary inline-flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-2.5 font-semibold text-accent-contrast text-sm shadow-sm hover:bg-accent-strong"
 							onClick={() => setIsSettingsOpen(true)}
 							type="button"
 						>
@@ -214,7 +214,7 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 
 				{statusMessage && (
 					<p
-						className="mt-5 rounded-xl bg-white px-4 py-3 text-sm text-stone-600 shadow-sm"
+						className="app-panel mt-5 rounded-xl bg-surface px-4 py-3 text-sm text-muted shadow-sm"
 						role="status"
 					>
 						{statusMessage}
@@ -226,7 +226,7 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 						<span className="sr-only">Pesquisar livros</span>
 						<svg
 							aria-hidden="true"
-							className="-translate-y-1/2 absolute top-1/2 left-4 size-5 text-stone-400"
+							className="-translate-y-1/2 absolute top-1/2 left-4 size-5 text-muted"
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
@@ -239,7 +239,7 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 							/>
 						</svg>
 						<input
-							className="h-12 w-full rounded-xl border border-stone-300 bg-white pr-4 pl-12 text-stone-800 shadow-sm outline-none placeholder:text-stone-400"
+							className="h-12 w-full rounded-xl border border-border bg-surface pr-4 pl-12 text-text shadow-sm outline-none placeholder:text-muted"
 							onChange={(event) => setQuery(event.currentTarget.value)}
 							placeholder="Pesquisar por título, autor ou arquivo..."
 							type="search"
@@ -249,10 +249,10 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 
 					<button
 						aria-expanded={isFiltersOpen}
-						className={`inline-flex h-12 items-center justify-center gap-2 rounded-xl border px-5 font-semibold shadow-sm ${
+						className={`app-button inline-flex h-12 items-center justify-center gap-2 rounded-xl border px-5 font-semibold shadow-sm ${
 							isFiltersOpen || activeFilterCount > 0
-								? "border-amber-800 bg-amber-50 text-amber-900"
-								: "border-stone-300 bg-white text-stone-700"
+								? "border-accent bg-surface-strong text-accent-strong"
+								: "border-border bg-surface text-text"
 						}`}
 						onClick={() => setIsFiltersOpen((isOpen) => !isOpen)}
 						type="button"
@@ -273,7 +273,7 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 						</svg>
 						Filtros
 						{activeFilterCount > 0 && (
-							<span className="grid size-5 place-items-center rounded-full bg-amber-900 text-amber-50 text-xs">
+							<span className="grid size-5 place-items-center rounded-full bg-accent text-accent-contrast text-xs">
 								{activeFilterCount}
 							</span>
 						)}
@@ -294,10 +294,10 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 				)}
 
 				{library.totalBooks === 0 ? (
-					<div className="mt-8 rounded-2xl border border-stone-300 border-dashed bg-white px-6 py-16 text-center">
+					<div className="app-panel mt-8 rounded-2xl border border-border border-dashed bg-surface px-6 py-16 text-center">
 						<svg
 							aria-hidden="true"
-							className="mx-auto size-12 text-stone-400"
+							className="mx-auto size-12 text-muted"
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
@@ -309,23 +309,23 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 								d="M4.5 5.25A2.25 2.25 0 0 1 6.75 3h3A2.25 2.25 0 0 1 12 5.25V21a2.25 2.25 0 0 0-2.25-2.25h-3A2.25 2.25 0 0 0 4.5 21V5.25Zm15 0A2.25 2.25 0 0 0 17.25 3h-3A2.25 2.25 0 0 0 12 5.25V21a2.25 2.25 0 0 1 2.25-2.25h3A2.25 2.25 0 0 1 19.5 21V5.25Z"
 							/>
 						</svg>
-						<h2 className="mt-4 font-bold text-xl text-stone-800">
+						<h2 className="mt-4 font-bold text-xl text-text">
 							Nenhum livro compatível encontrado
 						</h2>
-						<p className="mt-2 text-stone-500">
+						<p className="mt-2 text-muted">
 							A pasta selecionada não possui arquivos PDF ou EPUB.
 						</p>
 					</div>
 				) : filteredBooks.length === 0 ? (
-					<div className="mt-8 rounded-2xl border border-stone-300 border-dashed bg-white px-6 py-14 text-center">
-						<h2 className="font-bold text-xl text-stone-800">
+					<div className="app-panel mt-8 rounded-2xl border border-border border-dashed bg-surface px-6 py-14 text-center">
+						<h2 className="font-bold text-xl text-text">
 							Nenhum livro corresponde à busca
 						</h2>
-						<p className="mt-2 text-stone-500">
+						<p className="mt-2 text-muted">
 							Tente outro termo ou remova alguns filtros.
 						</p>
 						<button
-							className="mt-5 rounded-xl bg-amber-900 px-4 py-2.5 font-semibold text-amber-50 text-sm"
+							className="app-primary mt-5 rounded-xl bg-accent px-4 py-2.5 font-semibold text-accent-contrast text-sm"
 							onClick={handleClearFilters}
 							type="button"
 						>
@@ -334,7 +334,7 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 					</div>
 				) : (
 					<>
-						<p className="mt-7 text-stone-500 text-sm">
+						<p className="mt-7 text-muted text-sm">
 							Exibindo {filteredBooks.length} de {library.totalBooks}{" "}
 							{library.totalBooks === 1 ? "livro" : "livros"}
 						</p>
@@ -349,8 +349,8 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 										}
 										className={`relative block aspect-[2/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br p-5 text-left shadow-md transition-transform duration-300 ${
 											book.format === "PDF"
-												? "cursor-pointer from-amber-900 to-amber-700 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-amber-900 focus-visible:outline-offset-2"
-												: "cursor-default from-emerald-900 to-emerald-700"
+												? "cursor-pointer from-accent to-accent-strong hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
+												: "cursor-default from-success to-[color-mix(in_srgb,var(--success)_62%,#000)]"
 										}`}
 										disabled={book.format !== "PDF"}
 										onClick={() => handleOpenBook(book.id)}
@@ -390,22 +390,22 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 											</p>
 										</div>
 									</button>
-									<h2 className="mt-4 truncate font-bold text-stone-900">
+									<h2 className="mt-4 truncate font-bold text-text">
 										{book.title}
 									</h2>
-									<p className="mt-1 truncate text-sm text-stone-500">
+									<p className="mt-1 truncate text-sm text-muted">
 										{book.metadata?.authors.length
 											? book.metadata.authors.join(", ")
 											: book.relativePath}
 									</p>
 									{book.metadata?.firstPublishYear && (
-										<p className="mt-1 text-stone-400 text-xs">
+										<p className="mt-1 text-muted text-xs">
 											Primeira publicação: {book.metadata.firstPublishYear}
 										</p>
 									)}
 									{book.format === "PDF" && (
 										<button
-											className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-stone-300 bg-white px-3 py-1.5 font-semibold text-stone-600 text-xs shadow-sm hover:border-amber-800 hover:text-amber-900"
+											className="app-button mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 font-semibold text-muted text-xs shadow-sm hover:border-accent hover:text-accent-strong"
 											onClick={() => setEditingBook(book)}
 											type="button"
 										>

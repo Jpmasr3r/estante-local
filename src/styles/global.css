@@ -1,17 +1,292 @@
+@import url("https://fonts.googleapis.com/css2?family=Share+Tech&family=Share+Tech+Mono&display=swap");
 @import "tailwindcss";
 
+:root {
+	color-scheme: light dark;
+
+	--light-background: #f6f2e9;
+	--light-surface: #fffdf8;
+	--light-surface-strong: #efe8da;
+	--light-text: #24211c;
+	--light-text-muted: #6d665b;
+	--light-border: #ded5c6;
+	--light-highlight: #ffffff;
+	--light-accent: #e49700;
+	--light-accent-strong: #a96f00;
+	--light-accent-contrast: #211600;
+	--light-shadow: rgba(70, 49, 13, 0.14);
+
+	--dark-background: #121016;
+	--dark-surface: #1d1922;
+	--dark-surface-strong: #29222f;
+	--dark-text: #f5f0f7;
+	--dark-text-muted: #bcb3c1;
+	--dark-border: #403647;
+	--dark-highlight: #514759;
+	--dark-accent: #9700e4;
+	--dark-accent-strong: #c253f7;
+	--dark-accent-contrast: #ffffff;
+	--dark-shadow: rgba(0, 0, 0, 0.38);
+
+	--background: var(--light-background);
+	--surface: var(--light-surface);
+	--surface-strong: var(--light-surface-strong);
+	--text: var(--light-text);
+	--text-muted: var(--light-text-muted);
+	--border: var(--light-border);
+	--highlight: var(--light-highlight);
+	--accent: var(--light-accent);
+	--accent-strong: var(--light-accent-strong);
+	--accent-contrast: var(--light-accent-contrast);
+	--shadow: var(--light-shadow);
+	--success: #207a4b;
+	--danger: #b53c35;
+	--font-interface: "Share Tech", Tahoma, Arial, sans-serif;
+	--font-display: "Share Tech Mono", "Courier New", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--background: var(--dark-background);
+		--surface: var(--dark-surface);
+		--surface-strong: var(--dark-surface-strong);
+		--text: var(--dark-text);
+		--text-muted: var(--dark-text-muted);
+		--border: var(--dark-border);
+		--highlight: var(--dark-highlight);
+		--accent: var(--dark-accent);
+		--accent-strong: var(--dark-accent-strong);
+		--accent-contrast: var(--dark-accent-contrast);
+		--shadow: var(--dark-shadow);
+		--success: #39a96b;
+		--danger: #d85b53;
+	}
+}
+
+:root[data-theme="light"] {
+	color-scheme: light;
+	--background: var(--light-background);
+	--surface: var(--light-surface);
+	--surface-strong: var(--light-surface-strong);
+	--text: var(--light-text);
+	--text-muted: var(--light-text-muted);
+	--border: var(--light-border);
+	--highlight: var(--light-highlight);
+	--accent: var(--light-accent);
+	--accent-strong: var(--light-accent-strong);
+	--accent-contrast: var(--light-accent-contrast);
+	--shadow: var(--light-shadow);
+	--success: #207a4b;
+	--danger: #b53c35;
+}
+
+:root[data-theme="dark"] {
+	color-scheme: dark;
+	--background: var(--dark-background);
+	--surface: var(--dark-surface);
+	--surface-strong: var(--dark-surface-strong);
+	--text: var(--dark-text);
+	--text-muted: var(--dark-text-muted);
+	--border: var(--dark-border);
+	--highlight: var(--dark-highlight);
+	--accent: var(--dark-accent);
+	--accent-strong: var(--dark-accent-strong);
+	--accent-contrast: var(--dark-accent-contrast);
+	--shadow: var(--dark-shadow);
+	--success: #39a96b;
+	--danger: #d85b53;
+}
+
+@theme inline {
+	--color-background: var(--background);
+	--color-surface: var(--surface);
+	--color-surface-strong: var(--surface-strong);
+	--color-text: var(--text);
+	--color-muted: var(--text-muted);
+	--color-border: var(--border);
+	--color-highlight: var(--highlight);
+	--color-accent: var(--accent);
+	--color-accent-strong: var(--accent-strong);
+	--color-accent-contrast: var(--accent-contrast);
+	--color-success: var(--success);
+	--color-danger: var(--danger);
+	--font-sans: var(--font-interface);
+	--font-mono: var(--font-display);
+	--font-serif: var(--font-display);
+	--radius-sm: 4px;
+	--radius-md: 4px;
+	--radius-lg: 8px;
+	--radius-xl: 8px;
+	--radius-2xl: 8px;
+	--radius-3xl: 8px;
+}
+
 @layer base {
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
 	html {
 		min-width: 20rem;
 		min-height: 100%;
+		background: var(--background);
 	}
 
 	body {
 		min-height: 100vh;
-		background-color: var(--color-stone-100);
-		color: var(--color-stone-800);
-		font-family: var(--font-sans);
+		margin: 0;
+		color: var(--text);
+		background-color: var(--background);
+		background-image:
+			linear-gradient(
+				color-mix(in srgb, var(--highlight) 30%, transparent) 1px,
+				transparent 1px
+			),
+			repeating-linear-gradient(
+				135deg,
+				transparent 0,
+				transparent 8px,
+				color-mix(in srgb, var(--border) 24%, transparent) 8px,
+				color-mix(in srgb, var(--border) 24%, transparent) 12px
+			);
+		background-size:
+			100% 4px,
+			auto;
+		font-family: var(--font-interface);
 		font-synthesis: none;
+		line-height: 1.5;
 		text-rendering: optimizeLegibility;
+	}
+
+	body::before {
+		position: fixed;
+		inset: 0;
+		z-index: -1;
+		background: radial-gradient(
+			circle at 50% -20%,
+			color-mix(in srgb, var(--accent) 18%, transparent),
+			transparent 55%
+		);
+		content: "";
+		pointer-events: none;
+	}
+
+	button,
+	input,
+	select {
+		font: inherit;
+	}
+
+	h1,
+	h2,
+	h3 {
+		font-family: var(--font-display);
+		letter-spacing: -0.035em;
+	}
+
+	input,
+	select {
+		color: var(--text);
+		border-color: var(--border);
+		background: color-mix(in srgb, var(--background) 92%, #000000);
+		box-shadow:
+			inset 0 1px 4px var(--shadow),
+			0 1px 0 var(--highlight);
+	}
+
+	button,
+	a,
+	input,
+	select {
+		transition:
+			border-color 180ms ease,
+			background-color 180ms ease,
+			box-shadow 180ms ease,
+			color 180ms ease;
+	}
+
+	button:focus-visible,
+	a:focus-visible,
+	input:focus-visible,
+	select:focus-visible {
+		outline: 4px solid color-mix(in srgb, var(--accent) 32%, transparent);
+		outline-offset: 4px;
+	}
+}
+
+@layer components {
+	.app-toolbar {
+		background: linear-gradient(
+			to bottom,
+			var(--highlight),
+			var(--surface-strong) 8%,
+			var(--surface) 52%,
+			var(--surface-strong)
+		);
+		box-shadow:
+			inset 0 1px 0 color-mix(in srgb, var(--highlight) 85%, transparent),
+			0 4px 8px var(--shadow);
+	}
+
+	.app-panel {
+		border-color: var(--border);
+		background: linear-gradient(135deg, var(--surface), var(--surface-strong));
+		box-shadow:
+			inset 0 1px 0 var(--highlight),
+			0 4px 8px var(--shadow);
+	}
+
+	.app-button {
+		color: var(--text);
+		border-color: var(--border);
+		background: linear-gradient(
+			to bottom,
+			var(--highlight),
+			var(--surface-strong) 48%,
+			color-mix(in srgb, var(--surface-strong) 82%, #000000)
+		);
+		text-shadow: 0 1px 0 var(--highlight);
+		box-shadow:
+			inset 0 1px 0 color-mix(in srgb, var(--highlight) 75%, transparent),
+			0 1px 4px var(--shadow);
+	}
+
+	.app-button:hover {
+		border-color: var(--accent);
+		box-shadow:
+			inset 0 1px 0 var(--highlight),
+			0 0 8px color-mix(in srgb, var(--accent) 45%, transparent);
+	}
+
+	.app-primary {
+		color: var(--accent-contrast);
+		border: 1px solid var(--accent-strong);
+		background: linear-gradient(
+			to bottom,
+			color-mix(in srgb, var(--accent) 55%, #ffffff),
+			var(--accent) 45%,
+			color-mix(in srgb, var(--accent) 72%, #000000)
+		);
+		text-shadow: 0 -1px 0 color-mix(in srgb, var(--accent) 60%, #000000);
+		box-shadow:
+			inset 0 1px 0 color-mix(in srgb, #ffffff 56%, transparent),
+			0 1px 4px var(--shadow);
+	}
+
+	.app-primary:hover {
+		box-shadow:
+			inset 0 1px 0 color-mix(in srgb, #ffffff 56%, transparent),
+			0 0 8px color-mix(in srgb, var(--accent) 48%, transparent);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		scroll-behavior: auto;
+		transition-duration: 0ms;
 	}
 }

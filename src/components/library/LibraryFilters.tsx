@@ -26,13 +26,13 @@ export function LibraryFilters({
 	onMetadataChange,
 }: LibraryFiltersProps) {
 	return (
-		<div className="mt-3 grid gap-4 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:grid-cols-3">
+		<div className="app-panel mt-3 grid gap-4 rounded-2xl border border-border bg-surface p-4 shadow-sm sm:grid-cols-3">
 			<label>
-				<span className="font-semibold text-stone-600 text-xs uppercase tracking-wider">
+				<span className="font-semibold text-muted text-xs uppercase tracking-wider">
 					Formato
 				</span>
 				<select
-					className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 text-stone-700 outline-none focus:border-amber-700"
+					className="mt-1.5 h-11 w-full rounded-xl border border-border bg-surface px-3 text-text outline-none focus:border-accent"
 					onChange={(event) =>
 						onFormatChange(event.target.value as FormatFilter)
 					}
@@ -45,11 +45,11 @@ export function LibraryFilters({
 			</label>
 
 			<label>
-				<span className="font-semibold text-stone-600 text-xs uppercase tracking-wider">
+				<span className="font-semibold text-muted text-xs uppercase tracking-wider">
 					Pasta
 				</span>
 				<select
-					className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 text-stone-700 outline-none focus:border-amber-700"
+					className="mt-1.5 h-11 w-full rounded-xl border border-border bg-surface px-3 text-text outline-none focus:border-accent"
 					onChange={(event) => onFolderChange(event.target.value)}
 					value={folderId}
 				>
@@ -63,11 +63,11 @@ export function LibraryFilters({
 			</label>
 
 			<label>
-				<span className="font-semibold text-stone-600 text-xs uppercase tracking-wider">
+				<span className="font-semibold text-muted text-xs uppercase tracking-wider">
 					Informações
 				</span>
 				<select
-					className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 text-stone-700 outline-none focus:border-amber-700"
+					className="mt-1.5 h-11 w-full rounded-xl border border-border bg-surface px-3 text-text outline-none focus:border-accent"
 					onChange={(event) =>
 						onMetadataChange(event.target.value as MetadataFilter)
 					}
@@ -81,7 +81,7 @@ export function LibraryFilters({
 
 			<div className="flex justify-end sm:col-span-3">
 				<button
-					className="rounded-lg px-3 py-2 font-semibold text-amber-900 text-sm hover:bg-amber-50"
+					className="app-button rounded-lg px-3 py-2 font-semibold text-accent-strong text-sm hover:bg-surface-strong"
 					onClick={onClear}
 					type="button"
 				>

@@ -79,7 +79,7 @@ export function BookEditModal({ book, onClose, onSave }: BookEditModalProps) {
 		<div className="fixed inset-0 z-50 grid place-items-center p-4 sm:p-6">
 			<button
 				aria-label="Fechar edição"
-				className="absolute inset-0 bg-stone-950/55 backdrop-blur-sm"
+				className="absolute inset-0 bg-black/55 backdrop-blur-sm"
 				onClick={onClose}
 				type="button"
 			/>
@@ -87,24 +87,21 @@ export function BookEditModal({ book, onClose, onSave }: BookEditModalProps) {
 			<section
 				aria-labelledby="book-edit-title"
 				aria-modal="true"
-				className="relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-[#fdfbf7] shadow-2xl"
+				className="app-panel relative max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-surface shadow-2xl"
 				role="dialog"
 			>
-				<header className="flex items-start justify-between gap-4 border-stone-200 border-b px-6 py-5 sm:px-8">
+				<header className="flex items-start justify-between gap-4 border-border border-b px-6 py-5 sm:px-8">
 					<div>
-						<h2
-							className="font-bold text-2xl text-stone-900"
-							id="book-edit-title"
-						>
+						<h2 className="font-bold text-2xl text-text" id="book-edit-title">
 							Editar informações
 						</h2>
-						<p className="mt-1 truncate text-sm text-stone-500">
+						<p className="mt-1 truncate text-sm text-muted">
 							Arquivo original: {book.fileName}
 						</p>
 					</div>
 					<button
 						aria-label="Fechar"
-						className="grid size-10 shrink-0 place-items-center rounded-full text-stone-500 hover:bg-stone-200"
+						className="app-button grid size-10 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-strong"
 						onClick={onClose}
 						type="button"
 					>
@@ -119,7 +116,7 @@ export function BookEditModal({ book, onClose, onSave }: BookEditModalProps) {
 					onSubmit={handleSubmit}
 				>
 					<div>
-						<div className="aspect-[2/3] overflow-hidden rounded-xl bg-gradient-to-br from-amber-900 to-amber-700 shadow-md">
+						<div className="aspect-[2/3] overflow-hidden rounded-xl bg-gradient-to-br from-accent to-accent-strong shadow-md">
 							{coverPreview ? (
 								<img
 									alt="Prévia da capa"
@@ -127,7 +124,7 @@ export function BookEditModal({ book, onClose, onSave }: BookEditModalProps) {
 									src={coverPreview}
 								/>
 							) : (
-								<div className="grid size-full place-items-center p-4 text-center font-serif text-amber-50">
+								<div className="grid size-full place-items-center p-4 text-center font-serif text-accent-contrast">
 									{book.title}
 								</div>
 							)}
@@ -136,11 +133,9 @@ export function BookEditModal({ book, onClose, onSave }: BookEditModalProps) {
 
 					<div className="space-y-4">
 						<label className="block">
-							<span className="font-semibold text-sm text-stone-700">
-								Título
-							</span>
+							<span className="font-semibold text-sm text-text">Título</span>
 							<input
-								className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700/15"
+								className="mt-1.5 h-11 w-full rounded-xl border border-border bg-surface px-3 outline-none focus:border-accent focus:ring-2 focus:ring-accent/15"
 								defaultValue={book.title}
 								name="title"
 								type="text"
@@ -148,11 +143,9 @@ export function BookEditModal({ book, onClose, onSave }: BookEditModalProps) {
 						</label>
 
 						<label className="block">
-							<span className="font-semibold text-sm text-stone-700">
-								Autores
-							</span>
+							<span className="font-semibold text-sm text-text">Autores</span>
 							<input
-								className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700/15"
+								className="mt-1.5 h-11 w-full rounded-xl border border-border bg-surface px-3 outline-none focus:border-accent focus:ring-2 focus:ring-accent/15"
 								defaultValue={book.metadata?.authors.join(", ") ?? ""}
 								name="authors"
 								placeholder="Separe os autores por vírgulas"
@@ -161,11 +154,11 @@ export function BookEditModal({ book, onClose, onSave }: BookEditModalProps) {
 						</label>
 
 						<label className="block">
-							<span className="font-semibold text-sm text-stone-700">
+							<span className="font-semibold text-sm text-text">
 								Ano de publicação
 							</span>
 							<input
-								className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700/15"
+								className="mt-1.5 h-11 w-full rounded-xl border border-border bg-surface px-3 outline-none focus:border-accent focus:ring-2 focus:ring-accent/15"
 								defaultValue={book.metadata?.firstPublishYear ?? ""}
 								max={currentYear + 1}
 								min="0"
@@ -175,11 +168,11 @@ export function BookEditModal({ book, onClose, onSave }: BookEditModalProps) {
 						</label>
 
 						<label className="block">
-							<span className="font-semibold text-sm text-stone-700">
+							<span className="font-semibold text-sm text-text">
 								URL da capa
 							</span>
 							<input
-								className="mt-1.5 h-11 w-full rounded-xl border border-stone-300 bg-white px-3 outline-none focus:border-amber-700 focus:ring-2 focus:ring-amber-700/15"
+								className="mt-1.5 h-11 w-full rounded-xl border border-border bg-surface px-3 outline-none focus:border-accent focus:ring-2 focus:ring-accent/15"
 								defaultValue={book.metadata?.coverUrl ?? ""}
 								name="coverUrl"
 								onChange={(event) => setCoverPreview(event.currentTarget.value)}
@@ -189,21 +182,21 @@ export function BookEditModal({ book, onClose, onSave }: BookEditModalProps) {
 						</label>
 
 						{errorMessage && (
-							<p className="text-red-700 text-sm" role="alert">
+							<p className="text-danger text-sm" role="alert">
 								{errorMessage}
 							</p>
 						)}
 
 						<div className="flex justify-end gap-3 pt-2">
 							<button
-								className="rounded-xl px-4 py-2.5 font-semibold text-sm text-stone-600 hover:bg-stone-100"
+								className="app-button rounded-xl px-4 py-2.5 font-semibold text-sm text-muted hover:bg-surface-strong"
 								onClick={onClose}
 								type="button"
 							>
 								Cancelar
 							</button>
 							<button
-								className="rounded-xl bg-amber-900 px-5 py-2.5 font-semibold text-amber-50 text-sm hover:bg-amber-950"
+								className="app-primary rounded-xl bg-accent px-5 py-2.5 font-semibold text-accent-contrast text-sm hover:bg-accent-strong"
 								type="submit"
 							>
 								Salvar alterações

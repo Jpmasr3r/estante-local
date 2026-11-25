@@ -1,16 +1,21 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+
+import { themeManager } from "../../application/theme/ThemeManager";
 import { env } from "../../config/env";
 
 export function AppHeader() {
+	const [theme, setTheme] = useState(() => themeManager.initialize());
+
 	return (
-		<header className="border-amber-950/10 border-b bg-[#fdfbf7]/90 px-5 backdrop-blur sm:px-8">
+		<header className="app-toolbar border-border border-b bg-surface/90 px-5 backdrop-blur sm:px-8">
 			<div className="mx-auto flex min-h-18 w-full max-w-6xl items-center justify-between gap-6">
 				<Link
-					className="flex items-center gap-3 text-amber-950 no-underline"
+					className="flex items-center gap-3 text-accent-strong no-underline"
 					to="/"
 					aria-label="Página inicial do Estante Local"
 				>
-					<span className="grid size-10 place-items-center rounded-xl bg-amber-900 text-amber-50 shadow-sm">
+					<span className="grid size-10 place-items-center rounded-xl bg-accent text-accent-contrast shadow-sm">
 						<svg
 							aria-hidden="true"
 							className="size-5"
@@ -31,23 +36,38 @@ export function AppHeader() {
 					</span>
 				</Link>
 
-				<span className="hidden items-center gap-2 text-sm text-stone-600 sm:flex">
-					<svg
-						aria-hidden="true"
-						className="size-4 text-emerald-700"
-						fill="none"
-						viewBox="0 0 24 24"
-						stroke="currentColor"
-						strokeWidth="2"
+				<div className="flex items-center gap-3">
+					<span className="hidden items-center gap-2 text-sm text-muted sm:flex">
+						<svg
+							aria-hidden="true"
+							className="size-4 text-success"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							strokeWidth="2"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								d="M9 12.75 11.25 15 15 9.75m6 2.25a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+							/>
+						</svg>
+						Processamento 100% local
+					</span>
+					<button
+						aria-label={
+							theme === "light" ? "Ativar tema escuro" : "Ativar tema claro"
+						}
+						className="app-button grid size-10 place-items-center rounded-lg border border-border bg-surface text-text shadow-sm"
+						onClick={() => setTheme(themeManager.toggle(theme))}
+						title={theme === "light" ? "Tema escuro" : "Tema claro"}
+						type="button"
 					>
-						<path
-							strokeLinecap="round"
-							strokeLinejoin="round"
-							d="M9 12.75 11.25 15 15 9.75m6 2.25a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-						/>
-					</svg>
-					Processamento 100% local
-				</span>
+						<span aria-hidden="true" className="text-lg">
+							{theme === "light" ? "☾" : "☀"}
+						</span>
+					</button>
+				</div>
 			</div>
 		</header>
 	);

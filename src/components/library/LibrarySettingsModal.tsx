@@ -32,7 +32,7 @@ export function LibrarySettingsModal({
 		<div className="fixed inset-0 z-50 grid place-items-center p-4 sm:p-6">
 			<button
 				aria-label="Fechar configurações"
-				className="absolute inset-0 bg-stone-950/55 backdrop-blur-sm"
+				className="absolute inset-0 bg-black/55 backdrop-blur-sm"
 				onClick={onClose}
 				type="button"
 			/>
@@ -40,24 +40,21 @@ export function LibrarySettingsModal({
 			<section
 				aria-labelledby="settings-title"
 				aria-modal="true"
-				className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-[#fdfbf7] shadow-2xl"
+				className="app-panel relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl bg-surface shadow-2xl"
 				role="dialog"
 			>
-				<header className="sticky top-0 flex items-start justify-between gap-4 border-stone-200 border-b bg-[#fdfbf7] px-6 py-5 sm:px-8">
+				<header className="sticky top-0 flex items-start justify-between gap-4 border-border border-b bg-surface px-6 py-5 sm:px-8">
 					<div>
-						<h2
-							className="font-bold text-2xl text-stone-900"
-							id="settings-title"
-						>
+						<h2 className="font-bold text-2xl text-text" id="settings-title">
 							Configurações da biblioteca
 						</h2>
-						<p className="mt-1 text-sm text-stone-500">
+						<p className="mt-1 text-sm text-muted">
 							Gerencie as pastas usadas para encontrar seus livros.
 						</p>
 					</div>
 					<button
 						aria-label="Fechar"
-						className="grid size-10 shrink-0 place-items-center rounded-full text-stone-500 hover:bg-stone-200"
+						className="app-button grid size-10 shrink-0 place-items-center rounded-full text-muted hover:bg-surface-strong"
 						onClick={onClose}
 						type="button"
 					>
@@ -81,11 +78,11 @@ export function LibrarySettingsModal({
 				<div className="space-y-4 px-6 py-6 sm:px-8">
 					{library.folders.map((folder) => (
 						<article
-							className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm"
+							className="app-panel rounded-2xl border border-border bg-surface p-4 shadow-sm"
 							key={folder.id}
 						>
 							<div className="flex items-start gap-3">
-								<span className="grid size-10 shrink-0 place-items-center rounded-xl bg-amber-100 text-amber-900">
+								<span className="grid size-10 shrink-0 place-items-center rounded-xl bg-surface-strong text-accent-strong">
 									<svg
 										aria-hidden="true"
 										className="size-5"
@@ -102,28 +99,28 @@ export function LibrarySettingsModal({
 									</svg>
 								</span>
 								<div className="min-w-0 flex-1">
-									<h3 className="truncate font-bold text-stone-800">
+									<h3 className="truncate font-bold text-text">
 										{folder.name}
 									</h3>
-									<p className="mt-1 break-all text-sm text-stone-500">
+									<p className="mt-1 break-all text-sm text-muted">
 										Caminho disponível: {folder.path}
 									</p>
-									<p className="mt-1 text-stone-400 text-xs">
+									<p className="mt-1 text-muted text-xs">
 										{folder.totalBooks} arquivos PDF ou EPUB
 									</p>
 								</div>
 							</div>
 
-							<div className="mt-4 flex justify-end gap-2 border-stone-100 border-t pt-3">
+							<div className="mt-4 flex justify-end gap-2 border-border border-t pt-3">
 								<button
-									className="rounded-lg px-3 py-2 font-semibold text-sm text-stone-600 hover:bg-stone-100"
+									className="app-button rounded-lg px-3 py-2 font-semibold text-sm text-muted hover:bg-surface-strong"
 									onClick={() => onReplaceFolder(folder.id)}
 									type="button"
 								>
 									Modificar
 								</button>
 								<button
-									className="rounded-lg px-3 py-2 font-semibold text-red-700 text-sm hover:bg-red-50"
+									className="app-button rounded-lg px-3 py-2 font-semibold text-danger text-sm hover:bg-surface-strong"
 									onClick={() => onRemoveFolder(folder.id)}
 									type="button"
 								>
@@ -134,7 +131,7 @@ export function LibrarySettingsModal({
 					))}
 
 					<button
-						className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-amber-900/20 border-dashed px-4 py-4 font-semibold text-amber-900 hover:bg-amber-50"
+						className="app-button flex w-full items-center justify-center gap-2 rounded-xl border-2 border-accent/25 border-dashed px-4 py-4 font-semibold text-accent-strong hover:bg-surface-strong"
 						onClick={onAddFolder}
 						type="button"
 					>
@@ -142,7 +139,7 @@ export function LibrarySettingsModal({
 						Adicionar pasta
 					</button>
 
-					<p className="text-center text-stone-400 text-xs leading-relaxed">
+					<p className="text-center text-muted text-xs leading-relaxed">
 						Por segurança, o navegador não permite exibir o caminho absoluto das
 						pastas. Somente os nomes e caminhos relativos ficam disponíveis.
 					</p>
