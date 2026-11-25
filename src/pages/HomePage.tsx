@@ -6,10 +6,12 @@ import { libraryManager } from "../config/library";
 export function HomePage() {
 	const navigate = useNavigate();
 	const [errorMessage, setErrorMessage] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const handleFolderSelection = async () => {
 		try {
 			setErrorMessage(null);
+			setIsLoading(true);
 			const library = await libraryManager.addFolder();
 
 			if (library && library.folders.length > 0) {
@@ -21,6 +23,8 @@ export function HomePage() {
 					? error.message
 					: "Não foi possível acessar a pasta selecionada.",
 			);
+		} finally {
+			setIsLoading(false);
 		}
 	};
 
@@ -122,7 +126,8 @@ export function HomePage() {
 						</p>
 
 						<button
-							className="mt-7 inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-amber-900 px-6 py-3.5 font-semibold text-amber-50 shadow-md transition-colors hover:bg-amber-950 focus-visible:outline-2 focus-visible:outline-amber-800 focus-visible:outline-offset-2"
+							className="mt-7 inline-flex cursor-pointer items-center justify-center gap-2 rounded-xl bg-amber-900 px-6 py-3.5 font-semibold text-amber-50 shadow-md transition-colors hover:bg-amber-950 focus-visible:outline-2 focus-visible:outline-amber-800 focus-visible:outline-offset-2 disabled:cursor-wait disabled:opacity-70"
+							disabled={isLoading}
 							onClick={handleFolderSelection}
 							type="button"
 						>
@@ -140,7 +145,7 @@ export function HomePage() {
 									d="M3.75 9.75h16.5m-16.5 0V18A2.25 2.25 0 0 0 6 20.25h12A2.25 2.25 0 0 0 20.25 18V9.75m-16.5 0V7.5A2.25 2.25 0 0 1 6 5.25h3.129a2.25 2.25 0 0 1 1.591.659l.621.621a2.25 2.25 0 0 0 1.591.659H18a2.25 2.25 0 0 1 2.25 2.25v.311"
 								/>
 							</svg>
-							Selecionar pasta
+							{isLoading ? "Identificando livros..." : "Selecionar pasta"}
 						</button>
 
 						{errorMessage && (

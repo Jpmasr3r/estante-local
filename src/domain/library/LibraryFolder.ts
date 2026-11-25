@@ -11,4 +11,15 @@ export class LibraryFolder {
 	public get totalBooks(): number {
 		return this.books.length;
 	}
+
+	public replaceBook(book: BookFile): LibraryFolder {
+		return new LibraryFolder(
+			this.id,
+			this.name,
+			this.path,
+			this.books.map((currentBook) =>
+				currentBook.id === book.id ? book : currentBook,
+			),
+		);
+	}
 }

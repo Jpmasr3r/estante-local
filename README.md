@@ -11,6 +11,7 @@ armazenados no dispositivo do usuário.
 - Tailwind CSS
 - Vite
 - Biome
+- Open Library API
 
 ## Como executar
 
@@ -45,3 +46,5 @@ O processamento dos arquivos será realizado localmente. Nenhum back-end faz par
 do escopo do projeto. Apenas os metadados da biblioteca são persistidos no
 `localStorage` em formato JSON. As permissões das pastas são mantidas no IndexedDB
 para permitir a releitura. O conteúdo dos livros nunca é armazenado ou enviado.
+Somente títulos normalizados são enviados à Open Library para consultar metadados e
+capas. O nome original de cada arquivo é preservado como fallback.

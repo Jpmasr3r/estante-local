@@ -7,8 +7,16 @@ import { LocalLibrary } from "../../domain/library/LocalLibrary";
 
 const STORAGE_KEY = "estante-local:library";
 
+const storedMetadataSchema = z.object({
+	providerId: z.string().min(1),
+	title: z.string().min(1),
+	authors: z.array(z.string()),
+	coverUrl: z.url().nullable(),
+	firstPublishYear: z.number().int().nullable(),
+});
+
 const storedLibrarySchema = z.object({
-	version: z.literal(2),
+	version: z.literal(3),
 	folders: z.array(
 		z.object({
 			id: z.string().min(1),
@@ -17,9 +25,10 @@ const storedLibrarySchema = z.object({
 			books: z.array(
 				z.object({
 					id: z.string().min(1),
-					title: z.string().min(1),
+					fileName: z.string().min(1),
 					format: z.enum(["PDF", "EPUB"]),
 					relativePath: z.string().min(1),
+					metadata: storedMetadataSchema.nullable(),
 				}),
 			),
 		}),
@@ -60,16 +69,25 @@ export class LocalStorageLibraryRepository implements LibraryRepository {
 
 	public save(library: LocalLibrary): void {
 		const storedLibrary = {
-			version: 2,
+			version: 3,
 			folders: library.folders.map((folder) => ({
 				id: folder.id,
 				name: folder.name,
 				path: folder.path,
 				books: folder.books.map((book) => ({
 					id: book.id,
-					title: book.title,
+					fileName: book.fileName,
 					format: book.format,
 					relativePath: book.relativePath,
+					metadata: book.metadata
+						? {
+								providerId: book.metadata.providerId,
+								title: book.metadata.title,
+								authors: book.metadata.authors,
+								coverUrl: book.metadata.coverUrl,
+								firstPublishYear: book.metadata.firstPublishYear,
+							}
+						: null,
 				})),
 			})),
 		};

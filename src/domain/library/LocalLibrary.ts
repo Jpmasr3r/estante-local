@@ -29,4 +29,14 @@ export class LocalLibrary {
 			this.folders.filter((folder) => folder.id !== folderId),
 		);
 	}
+
+	public replaceBook(book: BookFile): LocalLibrary {
+		return new LocalLibrary(
+			this.folders.map((folder) =>
+				folder.books.some((currentBook) => currentBook.id === book.id)
+					? folder.replaceBook(book)
+					: folder,
+			),
+		);
+	}
 }

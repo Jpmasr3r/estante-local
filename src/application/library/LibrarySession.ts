@@ -1,3 +1,4 @@
+import type { BookFile } from "../../domain/library/BookFile";
 import type { LibraryFolder } from "../../domain/library/LibraryFolder";
 import { LocalLibrary } from "../../domain/library/LocalLibrary";
 import type { LibraryRepository } from "./LibraryRepository";
@@ -33,6 +34,17 @@ export class LibrarySession {
 		}
 
 		this.currentLibrary = this.currentLibrary.removeFolder(folderId);
+		this.libraryRepository.save(this.currentLibrary);
+
+		return this.currentLibrary;
+	}
+
+	public updateBook(book: BookFile): LocalLibrary | null {
+		if (!this.currentLibrary) {
+			return null;
+		}
+
+		this.currentLibrary = this.currentLibrary.replaceBook(book);
 		this.libraryRepository.save(this.currentLibrary);
 
 		return this.currentLibrary;

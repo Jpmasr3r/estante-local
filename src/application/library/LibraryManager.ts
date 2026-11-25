@@ -1,5 +1,10 @@
-import type { LibraryFolder } from "../../domain/library/LibraryFolder";
+import {
+	BookMetadata,
+	type BookMetadataData,
+} from "../../domain/library/BookMetadata";
+import { LibraryFolder } from "../../domain/library/LibraryFolder";
 import type { LocalLibrary } from "../../domain/library/LocalLibrary";
+import type { BookMetadataService } from "../metadata/BookMetadataService";
 import type { DirectoryHandleRepository } from "./DirectoryHandleRepository";
 import type { DirectoryPicker, DirectorySelection } from "./DirectoryPicker";
 import type { DirectoryReader } from "./DirectoryReader";
@@ -16,6 +21,7 @@ export class LibraryManager {
 		private readonly directoryReader: DirectoryReader,
 		private readonly handleRepository: DirectoryHandleRepository,
 		private readonly directoryPicker: DirectoryPicker,
+		private readonly metadataService: BookMetadataService,
 	) {}
 
 	public getLibrary(): LocalLibrary | null {
@@ -73,6 +79,28 @@ export class LibraryManager {
 		const folder = await this.readSelection(selectedFolder);
 
 		return this.session.addFolder(folder);
+	}
+
+	public updateBookMetadata(
+		bookId: string,
+		metadata: Omit<BookMetadataData, "providerId">,
+	): LocalLibrary | null {
+		const book = this.getLibrary()?.books.find(
+			(currentBook) => currentBook.id === bookId,
+		);
+
+		if (!book) {
+			return this.getLibrary();
+		}
+
+		const updatedBook = book.withMetadata(
+			new BookMetadata({
+				...metadata,
+				providerId: `manual:${book.id}`,
+			}),
+		);
+
+		return this.session.updateBook(updatedBook);
 	}
 
 	public async replaceFolder(folderId: string): Promise<LocalLibrary | null> {
@@ -141,7 +169,12 @@ export class LibraryManager {
 				return null;
 			}
 
-			return await this.directoryReader.read(handle, folder.id);
+			const refreshedFolder = await this.directoryReader.read(
+				handle,
+				folder.id,
+			);
+
+			return await this.enrichFolder(refreshedFolder);
 		} catch {
 			return null;
 		}
@@ -152,13 +185,15 @@ export class LibraryManager {
 		folderId?: string,
 	): Promise<LibraryFolder> {
 		if (selection.kind === "files") {
-			return this.directoryReader.readFiles(selection.files, folderId);
+			const folder = this.directoryReader.readFiles(selection.files, folderId);
+
+			return this.enrichFolder(folder);
 		}
 
 		const folder = await this.directoryReader.read(selection.handle, folderId);
 		await this.saveHandle(folder.id, selection.handle);
 
-		return folder;
+		return this.enrichFolder(folder);
 	}
 
 	private async saveHandle(
@@ -199,5 +234,24 @@ export class LibraryManager {
 		const fileHandle = await currentDirectory.getFileHandle(fileName);
 
 		return fileHandle.getFile();
+	}
+
+	private async enrichFolder(folder: LibraryFolder): Promise<LibraryFolder> {
+		const storedBooks = new Map(
+			(this.getLibrary()?.books ?? []).map((book) => [book.id, book]),
+		);
+		const booksWithStoredMetadata = folder.books.map((book) => {
+			const metadata = storedBooks.get(book.id)?.metadata;
+
+			return metadata ? book.withMetadata(metadata) : book;
+		});
+		const folderWithStoredMetadata = new LibraryFolder(
+			folder.id,
+			folder.name,
+			folder.path,
+			booksWithStoredMetadata,
+		);
+
+		return this.metadataService.enrichFolder(folderWithStoredMetadata);
 	}
 }

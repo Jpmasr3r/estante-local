@@ -1,20 +1,28 @@
+import { BookMetadata, type BookMetadataData } from "./BookMetadata";
+
 export type BookFormat = "PDF" | "EPUB";
 
 interface RestoredBookFile {
 	id: string;
-	title: string;
+	fileName: string;
 	format: BookFormat;
 	relativePath: string;
+	metadata: BookMetadataData | null;
 }
 
 export class BookFile {
 	private constructor(
 		public readonly id: string,
-		public readonly title: string,
+		public readonly fileName: string,
 		public readonly format: BookFormat,
 		public readonly relativePath: string,
 		public readonly source: File | null,
+		public readonly metadata: BookMetadata | null,
 	) {}
+
+	public get title(): string {
+		return this.metadata?.title ?? this.fileName;
+	}
 
 	public static from(
 		file: File,
@@ -26,28 +34,35 @@ export class BookFile {
 			return null;
 		}
 
-		const title = file.name
-			.replace(/\.(pdf|epub)$/i, "")
-			.replaceAll(/[_-]+/g, " ")
-			.trim();
-		const relativePath = path;
-
 		return new BookFile(
-			`${relativePath}-${file.size}-${file.lastModified}`,
-			title || file.name,
+			`${path}-${file.size}-${file.lastModified}`,
+			file.name,
 			extension.toUpperCase() as BookFormat,
-			relativePath,
+			path,
 			file,
+			null,
 		);
 	}
 
 	public static restore(book: RestoredBookFile): BookFile {
 		return new BookFile(
 			book.id,
-			book.title,
+			book.fileName,
 			book.format,
 			book.relativePath,
 			null,
+			book.metadata ? new BookMetadata(book.metadata) : null,
+		);
+	}
+
+	public withMetadata(metadata: BookMetadata): BookFile {
+		return new BookFile(
+			this.id,
+			this.fileName,
+			this.format,
+			this.relativePath,
+			this.source,
+			metadata,
 		);
 	}
 }

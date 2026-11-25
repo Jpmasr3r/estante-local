@@ -1,13 +1,24 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import {
+	BookCatalogFilter,
+	type FormatFilter,
+	type MetadataFilter,
+} from "../application/library/BookCatalogFilter";
+import { BookEditModal } from "../components/library/BookEditModal";
+import { LibraryFilters } from "../components/library/LibraryFilters";
 import { LibrarySettingsModal } from "../components/library/LibrarySettingsModal";
 import { libraryManager } from "../config/library";
+import type { BookFile } from "../domain/library/BookFile";
+import type { BookMetadataData } from "../domain/library/BookMetadata";
 import type { LocalLibrary } from "../domain/library/LocalLibrary";
 
 interface LibraryPageProps {
 	library: LocalLibrary;
 }
+
+const bookCatalogFilter = new BookCatalogFilter();
 
 export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 	const navigate = useNavigate();
@@ -15,6 +26,28 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 	const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 	const [isRefreshing, setIsRefreshing] = useState(false);
 	const [statusMessage, setStatusMessage] = useState<string | null>(null);
+	const [editingBook, setEditingBook] = useState<BookFile | null>(null);
+	const [query, setQuery] = useState("");
+	const [formatFilter, setFormatFilter] = useState<FormatFilter>("ALL");
+	const [folderFilter, setFolderFilter] = useState("ALL");
+	const [metadataFilter, setMetadataFilter] = useState<MetadataFilter>("ALL");
+	const [isFiltersOpen, setIsFiltersOpen] = useState(false);
+
+	const filteredBooks = useMemo(
+		() =>
+			bookCatalogFilter.filter(library, {
+				query,
+				format: formatFilter,
+				folderId: folderFilter,
+				metadata: metadataFilter,
+			}),
+		[library, query, formatFilter, folderFilter, metadataFilter],
+	);
+	const activeFilterCount = [
+		formatFilter !== "ALL",
+		folderFilter !== "ALL",
+		metadataFilter !== "ALL",
+	].filter(Boolean).length;
 
 	const handleAddFolder = async () => {
 		try {
@@ -49,6 +82,9 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 		}
 
 		setLibrary(updatedLibrary);
+		if (folderFilter === folderId) {
+			setFolderFilter("ALL");
+		}
 	};
 
 	const handleRefreshFolders = async () => {
@@ -76,6 +112,30 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 
 	const handleOpenBook = (bookId: string) => {
 		navigate(`/leitor/${encodeURIComponent(bookId)}`);
+	};
+
+	const handleSaveBook = (metadata: Omit<BookMetadataData, "providerId">) => {
+		if (!editingBook) {
+			return;
+		}
+
+		const updatedLibrary = libraryManager.updateBookMetadata(
+			editingBook.id,
+			metadata,
+		);
+
+		if (updatedLibrary) {
+			setLibrary(updatedLibrary);
+		}
+
+		setEditingBook(null);
+	};
+
+	const handleClearFilters = () => {
+		setQuery("");
+		setFormatFilter("ALL");
+		setFolderFilter("ALL");
+		setMetadataFilter("ALL");
 	};
 
 	return (
@@ -180,13 +240,21 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 						</svg>
 						<input
 							className="h-12 w-full rounded-xl border border-stone-300 bg-white pr-4 pl-12 text-stone-800 shadow-sm outline-none placeholder:text-stone-400"
-							placeholder="Pesquisar por título ou autor..."
+							onChange={(event) => setQuery(event.currentTarget.value)}
+							placeholder="Pesquisar por título, autor ou arquivo..."
 							type="search"
+							value={query}
 						/>
 					</label>
 
 					<button
-						className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-stone-300 bg-white px-5 font-semibold text-stone-700 shadow-sm"
+						aria-expanded={isFiltersOpen}
+						className={`inline-flex h-12 items-center justify-center gap-2 rounded-xl border px-5 font-semibold shadow-sm ${
+							isFiltersOpen || activeFilterCount > 0
+								? "border-amber-800 bg-amber-50 text-amber-900"
+								: "border-stone-300 bg-white text-stone-700"
+						}`}
+						onClick={() => setIsFiltersOpen((isOpen) => !isOpen)}
 						type="button"
 					>
 						<svg
@@ -204,8 +272,26 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 							/>
 						</svg>
 						Filtros
+						{activeFilterCount > 0 && (
+							<span className="grid size-5 place-items-center rounded-full bg-amber-900 text-amber-50 text-xs">
+								{activeFilterCount}
+							</span>
+						)}
 					</button>
 				</div>
+
+				{isFiltersOpen && (
+					<LibraryFilters
+						format={formatFilter}
+						folderId={folderFilter}
+						library={library}
+						metadata={metadataFilter}
+						onClear={handleClearFilters}
+						onFolderChange={setFolderFilter}
+						onFormatChange={setFormatFilter}
+						onMetadataChange={setMetadataFilter}
+					/>
+				)}
 
 				{library.totalBooks === 0 ? (
 					<div className="mt-8 rounded-2xl border border-stone-300 border-dashed bg-white px-6 py-16 text-center">
@@ -230,58 +316,120 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 							A pasta selecionada não possui arquivos PDF ou EPUB.
 						</p>
 					</div>
-				) : (
-					<div className="mt-8 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4">
-						{library.books.map((book) => (
-							<article key={book.id}>
-								<button
-									aria-label={
-										book.format === "PDF"
-											? `Ler ${book.title}`
-											: `${book.title}: leitura EPUB ainda indisponível`
-									}
-									className={`relative block aspect-[2/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br p-5 text-left shadow-md transition-transform duration-300 ${
-										book.format === "PDF"
-											? "cursor-pointer from-amber-900 to-amber-700 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-amber-900 focus-visible:outline-offset-2"
-											: "cursor-default from-emerald-900 to-emerald-700"
-									}`}
-									disabled={book.format !== "PDF"}
-									onClick={() => handleOpenBook(book.id)}
-									type="button"
-								>
-									<div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_35%,rgba(255,255,255,0.12)_50%,transparent_65%)]" />
-									<div className="relative flex h-full flex-col justify-between border border-white/20 p-4 text-white">
-										<svg
-											aria-hidden="true"
-											className="size-7 opacity-80"
-											fill="none"
-											viewBox="0 0 24 24"
-											stroke="currentColor"
-											strokeWidth="1.5"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												d="M4.5 5.25A2.25 2.25 0 0 1 6.75 3h3A2.25 2.25 0 0 1 12 5.25V21a2.25 2.25 0 0 0-2.25-2.25h-3A2.25 2.25 0 0 0 4.5 21V5.25Zm15 0A2.25 2.25 0 0 0 17.25 3h-3A2.25 2.25 0 0 0 12 5.25V21a2.25 2.25 0 0 1 2.25-2.25h3A2.25 2.25 0 0 1 19.5 21V5.25Z"
-											/>
-										</svg>
-										<p className="text-center font-serif text-xl leading-tight sm:text-2xl">
-											{book.title}
-										</p>
-										<p className="text-right text-white/70 text-xs uppercase tracking-widest">
-											{book.format}
-										</p>
-									</div>
-								</button>
-								<h2 className="mt-4 truncate font-bold text-stone-900">
-									{book.title}
-								</h2>
-								<p className="mt-1 truncate text-sm text-stone-500">
-									{book.relativePath}
-								</p>
-							</article>
-						))}
+				) : filteredBooks.length === 0 ? (
+					<div className="mt-8 rounded-2xl border border-stone-300 border-dashed bg-white px-6 py-14 text-center">
+						<h2 className="font-bold text-xl text-stone-800">
+							Nenhum livro corresponde à busca
+						</h2>
+						<p className="mt-2 text-stone-500">
+							Tente outro termo ou remova alguns filtros.
+						</p>
+						<button
+							className="mt-5 rounded-xl bg-amber-900 px-4 py-2.5 font-semibold text-amber-50 text-sm"
+							onClick={handleClearFilters}
+							type="button"
+						>
+							Limpar busca e filtros
+						</button>
 					</div>
+				) : (
+					<>
+						<p className="mt-7 text-stone-500 text-sm">
+							Exibindo {filteredBooks.length} de {library.totalBooks}{" "}
+							{library.totalBooks === 1 ? "livro" : "livros"}
+						</p>
+						<div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-3 sm:gap-x-6 lg:grid-cols-4">
+							{filteredBooks.map((book) => (
+								<article key={book.id}>
+									<button
+										aria-label={
+											book.format === "PDF"
+												? `Ler ${book.title}`
+												: `${book.title}: leitura EPUB ainda indisponível`
+										}
+										className={`relative block aspect-[2/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br p-5 text-left shadow-md transition-transform duration-300 ${
+											book.format === "PDF"
+												? "cursor-pointer from-amber-900 to-amber-700 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-amber-900 focus-visible:outline-offset-2"
+												: "cursor-default from-emerald-900 to-emerald-700"
+										}`}
+										disabled={book.format !== "PDF"}
+										onClick={() => handleOpenBook(book.id)}
+										type="button"
+									>
+										{book.metadata?.coverUrl && (
+											<img
+												alt={`Capa de ${book.title}`}
+												className="absolute inset-0 size-full object-cover"
+												src={book.metadata.coverUrl}
+											/>
+										)}
+										<div className="absolute inset-0 bg-[linear-gradient(115deg,transparent_35%,rgba(255,255,255,0.12)_50%,transparent_65%)]" />
+										<div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-black/15" />
+										<div className="relative flex h-full flex-col justify-between border border-white/20 p-4 text-white">
+											<svg
+												aria-hidden="true"
+												className="size-7 opacity-80"
+												fill="none"
+												viewBox="0 0 24 24"
+												stroke="currentColor"
+												strokeWidth="1.5"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													d="M4.5 5.25A2.25 2.25 0 0 1 6.75 3h3A2.25 2.25 0 0 1 12 5.25V21a2.25 2.25 0 0 0-2.25-2.25h-3A2.25 2.25 0 0 0 4.5 21V5.25Zm15 0A2.25 2.25 0 0 0 17.25 3h-3A2.25 2.25 0 0 0 12 5.25V21a2.25 2.25 0 0 1 2.25-2.25h3A2.25 2.25 0 0 1 19.5 21V5.25Z"
+												/>
+											</svg>
+											{!book.metadata?.coverUrl && (
+												<p className="text-center font-serif text-xl leading-tight sm:text-2xl">
+													{book.title}
+												</p>
+											)}
+											<p className="text-right text-white/70 text-xs uppercase tracking-widest">
+												{book.format}
+											</p>
+										</div>
+									</button>
+									<h2 className="mt-4 truncate font-bold text-stone-900">
+										{book.title}
+									</h2>
+									<p className="mt-1 truncate text-sm text-stone-500">
+										{book.metadata?.authors.length
+											? book.metadata.authors.join(", ")
+											: book.relativePath}
+									</p>
+									{book.metadata?.firstPublishYear && (
+										<p className="mt-1 text-stone-400 text-xs">
+											Primeira publicação: {book.metadata.firstPublishYear}
+										</p>
+									)}
+									{book.format === "PDF" && (
+										<button
+											className="mt-3 inline-flex items-center gap-1.5 rounded-lg border border-stone-300 bg-white px-3 py-1.5 font-semibold text-stone-600 text-xs shadow-sm hover:border-amber-800 hover:text-amber-900"
+											onClick={() => setEditingBook(book)}
+											type="button"
+										>
+											<svg
+												aria-hidden="true"
+												className="size-3.5"
+												fill="none"
+												viewBox="0 0 24 24"
+												stroke="currentColor"
+												strokeWidth="2"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"
+												/>
+											</svg>
+											Editar
+										</button>
+									)}
+								</article>
+							))}
+						</div>
+					</>
 				)}
 			</div>
 
@@ -292,6 +440,14 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 					onClose={() => setIsSettingsOpen(false)}
 					onRemoveFolder={handleRemoveFolder}
 					onReplaceFolder={handleReplaceFolder}
+				/>
+			)}
+
+			{editingBook && (
+				<BookEditModal
+					book={editingBook}
+					onClose={() => setEditingBook(null)}
+					onSave={handleSaveBook}
 				/>
 			)}
 		</section>
