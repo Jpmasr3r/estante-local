@@ -53,8 +53,8 @@ export function HomePage() {
 					</h1>
 
 					<p className="mt-6 max-w-xl text-lg text-muted leading-relaxed">
-						Selecione uma pasta e transforme seus arquivos PDF e EPUB em uma
-						biblioteca visual, organizada e fácil de consultar.
+						Selecione uma pasta e transforme seus arquivos PDF em uma biblioteca
+						visual, organizada e fácil de consultar.
 					</p>
 
 					<ul className="mt-8 grid gap-3 text-text sm:grid-cols-2">
@@ -155,7 +155,7 @@ export function HomePage() {
 						)}
 
 						<p className="mt-5 font-medium text-muted text-xs uppercase tracking-wider">
-							Formatos compatíveis: PDF e EPUB
+							Formato compatível: PDF
 						</p>
 					</div>
 

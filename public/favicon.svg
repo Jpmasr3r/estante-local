@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Estante Local</title>
+  <rect width="64" height="64" rx="10" fill="#e49700" />
+  <path
+    d="M12 15.5A5.5 5.5 0 0 1 17.5 10H25a7 7 0 0 1 7 7v36a7 7 0 0 0-7-7h-7.5a5.5 5.5 0 0 0-5.5 5.5v-36Zm40 0A5.5 5.5 0 0 0 46.5 10H39a7 7 0 0 0-7 7v36a7 7 0 0 1 7-7h7.5a5.5 5.5 0 0 1 5.5 5.5v-36Z"
+    fill="#211600"
+  />
+  <path d="M32 17v36" stroke="#fffdf8" stroke-width="2" opacity=".72" />
+</svg>

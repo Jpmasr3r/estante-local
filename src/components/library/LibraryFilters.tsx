@@ -1,49 +1,25 @@
-import type {
-	FormatFilter,
-	MetadataFilter,
-} from "../../application/library/BookCatalogFilter";
+import type { MetadataFilter } from "../../application/library/BookCatalogFilter";
 import type { LocalLibrary } from "../../domain/library/LocalLibrary";
 
 interface LibraryFiltersProps {
-	format: FormatFilter;
 	folderId: string;
 	library: LocalLibrary;
 	metadata: MetadataFilter;
 	onClear: () => void;
-	onFormatChange: (format: FormatFilter) => void;
 	onFolderChange: (folderId: string) => void;
 	onMetadataChange: (metadata: MetadataFilter) => void;
 }
 
 export function LibraryFilters({
-	format,
 	folderId,
 	library,
 	metadata,
 	onClear,
-	onFormatChange,
 	onFolderChange,
 	onMetadataChange,
 }: LibraryFiltersProps) {
 	return (
-		<div className="app-panel mt-3 grid gap-4 rounded-2xl border border-border bg-surface p-4 shadow-sm sm:grid-cols-3">
-			<label>
-				<span className="font-semibold text-muted text-xs uppercase tracking-wider">
-					Formato
-				</span>
-				<select
-					className="mt-1.5 h-11 w-full rounded-xl border border-border bg-surface px-3 text-text outline-none focus:border-accent"
-					onChange={(event) =>
-						onFormatChange(event.target.value as FormatFilter)
-					}
-					value={format}
-				>
-					<option value="ALL">Todos os formatos</option>
-					<option value="PDF">PDF</option>
-					<option value="EPUB">EPUB</option>
-				</select>
-			</label>
-
+		<div className="app-panel mt-3 grid gap-4 rounded-2xl border border-border bg-surface p-4 shadow-sm sm:grid-cols-2">
 			<label>
 				<span className="font-semibold text-muted text-xs uppercase tracking-wider">
 					Pasta

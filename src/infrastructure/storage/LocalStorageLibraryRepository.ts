@@ -16,7 +16,7 @@ const storedMetadataSchema = z.object({
 });
 
 const storedLibrarySchema = z.object({
-	version: z.literal(3),
+	version: z.union([z.literal(3), z.literal(4)]),
 	folders: z.array(
 		z.object({
 			id: z.string().min(1),
@@ -26,7 +26,6 @@ const storedLibrarySchema = z.object({
 				z.object({
 					id: z.string().min(1),
 					fileName: z.string().min(1),
-					format: z.enum(["PDF", "EPUB"]),
 					relativePath: z.string().min(1),
 					metadata: storedMetadataSchema.nullable(),
 				}),
@@ -57,11 +56,18 @@ export class LocalStorageLibraryRepository implements LibraryRepository {
 						folder.id,
 						folder.name,
 						folder.path,
-						folder.books.map((book) => BookFile.restore(book)),
+						folder.books
+							.filter((book) => book.fileName.toLowerCase().endsWith(".pdf"))
+							.map((book) => BookFile.restore(book)),
 					),
 			);
+			const library = new LocalLibrary(folders);
 
-			return new LocalLibrary(folders);
+			if (result.data.version < 4) {
+				this.save(library);
+			}
+
+			return library;
 		} catch {
 			return null;
 		}
@@ -69,7 +75,7 @@ export class LocalStorageLibraryRepository implements LibraryRepository {
 
 	public save(library: LocalLibrary): void {
 		const storedLibrary = {
-			version: 3,
+			version: 4,
 			folders: library.folders.map((folder) => ({
 				id: folder.id,
 				name: folder.name,
@@ -77,7 +83,6 @@ export class LocalStorageLibraryRepository implements LibraryRepository {
 				books: folder.books.map((book) => ({
 					id: book.id,
 					fileName: book.fileName,
-					format: book.format,
 					relativePath: book.relativePath,
 					metadata: book.metadata
 						? {

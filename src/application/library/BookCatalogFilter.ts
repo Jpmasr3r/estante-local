@@ -1,12 +1,10 @@
-import type { BookFile, BookFormat } from "../../domain/library/BookFile";
+import type { BookFile } from "../../domain/library/BookFile";
 import type { LocalLibrary } from "../../domain/library/LocalLibrary";
 
-export type FormatFilter = BookFormat | "ALL";
 export type MetadataFilter = "ALL" | "ENRICHED" | "LOCAL";
 
 export interface BookCatalogCriteria {
 	query: string;
-	format: FormatFilter;
 	folderId: string;
 	metadata: MetadataFilter;
 }
@@ -22,7 +20,6 @@ export class BookCatalogFilter {
 			folder.books.filter(
 				(book) =>
 					this.matchesQuery(book, normalizedQuery) &&
-					this.matchesFormat(book, criteria.format) &&
 					(criteria.folderId === "ALL" || folder.id === criteria.folderId) &&
 					this.matchesMetadata(book, criteria.metadata),
 			),
@@ -44,10 +41,6 @@ export class BookCatalogFilter {
 			.join(" ");
 
 		return searchableContent.includes(normalizedQuery);
-	}
-
-	private matchesFormat(book: BookFile, format: FormatFilter): boolean {
-		return format === "ALL" || book.format === format;
 	}
 
 	private matchesMetadata(book: BookFile, metadata: MetadataFilter): boolean {

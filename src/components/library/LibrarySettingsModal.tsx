@@ -106,7 +106,7 @@ export function LibrarySettingsModal({
 										Caminho disponível: {folder.path}
 									</p>
 									<p className="mt-1 text-muted text-xs">
-										{folder.totalBooks} arquivos PDF ou EPUB
+										{folder.totalBooks} arquivos PDF
 									</p>
 								</div>
 							</div>

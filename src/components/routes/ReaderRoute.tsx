@@ -8,7 +8,7 @@ export function ReaderRoute() {
 	const library = libraryManager.getLibrary();
 	const book = library?.books.find((currentBook) => currentBook.id === bookId);
 
-	if (book?.format !== "PDF") {
+	if (!book) {
 		return <Navigate to="/biblioteca" replace />;
 	}
 

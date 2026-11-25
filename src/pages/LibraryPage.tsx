@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import {
 	BookCatalogFilter,
-	type FormatFilter,
 	type MetadataFilter,
 } from "../application/library/BookCatalogFilter";
 import { BookEditModal } from "../components/library/BookEditModal";
@@ -28,7 +27,6 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 	const [statusMessage, setStatusMessage] = useState<string | null>(null);
 	const [editingBook, setEditingBook] = useState<BookFile | null>(null);
 	const [query, setQuery] = useState("");
-	const [formatFilter, setFormatFilter] = useState<FormatFilter>("ALL");
 	const [folderFilter, setFolderFilter] = useState("ALL");
 	const [metadataFilter, setMetadataFilter] = useState<MetadataFilter>("ALL");
 	const [isFiltersOpen, setIsFiltersOpen] = useState(false);
@@ -37,14 +35,12 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 		() =>
 			bookCatalogFilter.filter(library, {
 				query,
-				format: formatFilter,
 				folderId: folderFilter,
 				metadata: metadataFilter,
 			}),
-		[library, query, formatFilter, folderFilter, metadataFilter],
+		[library, query, folderFilter, metadataFilter],
 	);
 	const activeFilterCount = [
-		formatFilter !== "ALL",
 		folderFilter !== "ALL",
 		metadataFilter !== "ALL",
 	].filter(Boolean).length;
@@ -133,7 +129,6 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 
 	const handleClearFilters = () => {
 		setQuery("");
-		setFormatFilter("ALL");
 		setFolderFilter("ALL");
 		setMetadataFilter("ALL");
 	};
@@ -282,13 +277,11 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 
 				{isFiltersOpen && (
 					<LibraryFilters
-						format={formatFilter}
 						folderId={folderFilter}
 						library={library}
 						metadata={metadataFilter}
 						onClear={handleClearFilters}
 						onFolderChange={setFolderFilter}
-						onFormatChange={setFormatFilter}
 						onMetadataChange={setMetadataFilter}
 					/>
 				)}
@@ -313,7 +306,7 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 							Nenhum livro compatível encontrado
 						</h2>
 						<p className="mt-2 text-muted">
-							A pasta selecionada não possui arquivos PDF ou EPUB.
+							A pasta selecionada não possui arquivos PDF.
 						</p>
 					</div>
 				) : filteredBooks.length === 0 ? (
@@ -342,17 +335,8 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 							{filteredBooks.map((book) => (
 								<article key={book.id}>
 									<button
-										aria-label={
-											book.format === "PDF"
-												? `Ler ${book.title}`
-												: `${book.title}: leitura EPUB ainda indisponível`
-										}
-										className={`relative block aspect-[2/3] w-full overflow-hidden rounded-2xl bg-gradient-to-br p-5 text-left shadow-md transition-transform duration-300 ${
-											book.format === "PDF"
-												? "cursor-pointer from-accent to-accent-strong hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
-												: "cursor-default from-success to-[color-mix(in_srgb,var(--success)_62%,#000)]"
-										}`}
-										disabled={book.format !== "PDF"}
+										aria-label={`Ler ${book.title}`}
+										className="relative block aspect-[2/3] w-full cursor-pointer overflow-hidden rounded-2xl bg-gradient-to-br from-accent to-accent-strong p-5 text-left shadow-md transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-accent focus-visible:outline-offset-2"
 										onClick={() => handleOpenBook(book.id)}
 										type="button"
 									>
@@ -386,7 +370,7 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 												</p>
 											)}
 											<p className="text-right text-white/70 text-xs uppercase tracking-widest">
-												{book.format}
+												PDF
 											</p>
 										</div>
 									</button>
@@ -403,29 +387,27 @@ export function LibraryPage({ library: initialLibrary }: LibraryPageProps) {
 											Primeira publicação: {book.metadata.firstPublishYear}
 										</p>
 									)}
-									{book.format === "PDF" && (
-										<button
-											className="app-button mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 font-semibold text-muted text-xs shadow-sm hover:border-accent hover:text-accent-strong"
-											onClick={() => setEditingBook(book)}
-											type="button"
+									<button
+										className="app-button mt-3 inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 font-semibold text-muted text-xs shadow-sm hover:border-accent hover:text-accent-strong"
+										onClick={() => setEditingBook(book)}
+										type="button"
+									>
+										<svg
+											aria-hidden="true"
+											className="size-3.5"
+											fill="none"
+											viewBox="0 0 24 24"
+											stroke="currentColor"
+											strokeWidth="2"
 										>
-											<svg
-												aria-hidden="true"
-												className="size-3.5"
-												fill="none"
-												viewBox="0 0 24 24"
-												stroke="currentColor"
-												strokeWidth="2"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"
-												/>
-											</svg>
-											Editar
-										</button>
-									)}
+											<path
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125"
+											/>
+										</svg>
+										Editar
+									</button>
 								</article>
 							))}
 						</div>
